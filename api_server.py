@@ -123,18 +123,20 @@ async def generate_chart(request: ChartRequest):
         df.sort_index(inplace=True)
         
         # Prepare signal data dict
-        signal_dict = {
-            'entry_price': request.signal_data.entry_price,
-            'stop_loss': request.signal_data.stop_loss,
-            'take_profit': request.signal_data.take_profit,
-            'signal_type': request.signal_data.signal_type
-        }
+        signal_dict = None
+        if request.signal_data:
+            signal_dict = {
+                'entry_price': request.signal_data.entry_price,
+                'stop_loss': request.signal_data.stop_loss,
+                'take_profit': request.signal_data.take_profit,
+                'signal_type': request.signal_data.signal_type
+            }
         
         # Prepare strategy params dict
         strategy_dict = {
-            'bb_window': request.strategy_params.bb_window,
-            'bb_std': request.strategy_params.bb_std,
-            'vwap_std': request.strategy_params.vwap_std
+            'bb_window': request.strategy_params.bb_window if request.strategy_params else 20,
+            'bb_std': request.strategy_params.bb_std if request.strategy_params else 2.0,
+            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0
         }
         
         # Generate chart
@@ -198,18 +200,20 @@ async def generate_chart_image(request: ChartRequest):
         df.sort_index(inplace=True)
         
         # Prepare signal data dict
-        signal_dict = {
-            'entry_price': request.signal_data.entry_price,
-            'stop_loss': request.signal_data.stop_loss,
-            'take_profit': request.signal_data.take_profit,
-            'signal_type': request.signal_data.signal_type
-        }
+        signal_dict = None
+        if request.signal_data:
+            signal_dict = {
+                'entry_price': request.signal_data.entry_price,
+                'stop_loss': request.signal_data.stop_loss,
+                'take_profit': request.signal_data.take_profit,
+                'signal_type': request.signal_data.signal_type
+            }
         
         # Prepare strategy params dict
         strategy_dict = {
-            'bb_window': request.strategy_params.bb_window,
-            'bb_std': request.strategy_params.bb_std,
-            'vwap_std': request.strategy_params.vwap_std
+            'bb_window': request.strategy_params.bb_window if request.strategy_params else 20,
+            'bb_std': request.strategy_params.bb_std if request.strategy_params else 2.0,
+            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0
         }
         
         # Generate chart
