@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  chart-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chart-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - chart-network
+
+networks:
+  chart-network:
+    driver: bridge
