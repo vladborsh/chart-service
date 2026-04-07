@@ -42,9 +42,9 @@ class ChartRenderer:
             logger.warning("ChartRenderer initialized but mplfinance not available - charts will not be generated")
             return
             
-        # Define custom style for professional appearance
+        # Define custom dark style for professional appearance
         self.chart_style = mpf.make_mpf_style(
-            base_mpf_style='charles',
+            base_mpf_style='nightclouds',
             marketcolors=mpf.make_marketcolors(
                 up='#26a69a',      # Green for up candles
                 down='#ef5350',    # Red for down candles
@@ -54,16 +54,16 @@ class ChartRenderer:
                 alpha=0.9
             ),
             gridstyle='--',
-            gridcolor='#e0e0e0',
-            facecolor='#ffffff',
-            edgecolor='#000000',
-            figcolor='#ffffff',
+            gridcolor='#2a2e39',
+            facecolor='#131722',
+            edgecolor='#2a2e39',
+            figcolor='#131722',
             y_on_right=True
         )
-        
+
         # Chart settings
-        self.candles_to_show = 100  # Show last 100 candles for better context
-        self.figure_size = (12, 8)  # Size in inches for good mobile readability
+        self.candles_to_show = 200  # Show last 200 candles (more candles = tighter spacing)
+        self.figure_size = (16, 8)  # Wider figure to accommodate more candles
         self.dpi = 100  # Resolution
         
         logger.info("Chart renderer initialized")
@@ -145,28 +145,23 @@ class ChartRenderer:
             
             # Calculate indicators using the indicator calculator
             indicators = self.indicator_calculator.calculate_indicators(plot_data, strategy_params)
-            
-            # Check if indicators calculation failed
-            if not indicators:
-                logger.error(f"Indicators calculation failed for {symbol} - cannot generate chart")
-                return None
-            
+
             # Prepare additional plot lines for indicators
             additional_plots = []
-            
-            # Add Bollinger Bands (upper and lower only)
-            bb_data = indicators['bb']
-            additional_plots.extend([
-                mpf.make_addplot(bb_data['upper'], color='#808080', width=1, linestyle='--', alpha=0.7),
-                mpf.make_addplot(bb_data['lower'], color='#808080', width=1, linestyle='--', alpha=0.7)
-            ])
-            
-            # Add VWAP bands (upper and lower only)
-            vwap_data = indicators['vwap']
-            additional_plots.extend([
-                mpf.make_addplot(vwap_data['upper'], color='#9932cc', width=1, linestyle=':', alpha=0.6),
-                mpf.make_addplot(vwap_data['lower'], color='#9932cc', width=1, linestyle=':', alpha=0.6)
-            ])
+
+            if 'bb' in indicators:
+                bb_data = indicators['bb']
+                additional_plots.extend([
+                    mpf.make_addplot(bb_data['upper'], color='#808080', width=1, linestyle='--', alpha=0.7),
+                    mpf.make_addplot(bb_data['lower'], color='#808080', width=1, linestyle='--', alpha=0.7)
+                ])
+
+            if 'vwap' in indicators:
+                vwap_data = indicators['vwap']
+                additional_plots.extend([
+                    mpf.make_addplot(vwap_data['upper'], color='#9932cc', width=1, linestyle=':', alpha=0.6),
+                    mpf.make_addplot(vwap_data['lower'], color='#9932cc', width=1, linestyle=':', alpha=0.6)
+                ])
             
             # Add signal levels (entry, stop loss, take profit) as horizontal lines if provided
             if signal_data:
@@ -219,7 +214,8 @@ class ChartRenderer:
                 returnfig=True,
                 volume=False,  # Don't show volume subplot
                 tight_layout=True,
-                scale_padding={'left': 0.05, 'right': 0.15, 'top': 0.25, 'bottom': 0.05}
+                scale_padding={'left': 0.01, 'right': 0.01, 'top': 0.25, 'bottom': 0.05},
+                scale_width_adjustment=dict(candle=0.9)
             )
             
             # Apply y-axis limits if available for better SL/TP visibility
@@ -233,13 +229,14 @@ class ChartRenderer:
             axes[0].text(0.98, 0.02, timestamp_text,
                         transform=axes[0].transAxes,
                         fontsize=8,
+                        color='#aaaaaa',
                         horizontalalignment='right',
-                        alpha=0.6)
+                        alpha=0.8)
             
             # Save to bytes buffer
             buffer = io.BytesIO()
-            fig.savefig(buffer, format='png', dpi=self.dpi, bbox_inches='tight', 
-                       facecolor='white', edgecolor='none')
+            fig.savefig(buffer, format='png', dpi=self.dpi, bbox_inches='tight',
+                       facecolor='#131722', edgecolor='none')
             buffer.seek(0)
             
             # Clean up

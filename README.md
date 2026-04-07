@@ -56,10 +56,12 @@ Generate a chart and return as base64-encoded JSON
     "take_profit": 1.0550,
     "signal_type": "long"
   },
-  "strategy_params": {  // Optional (defaults: bb_window=20, bb_std=2.0, vwap_std=2.0)
+  "strategy_params": {  // Optional (defaults: bb_window=20, bb_std=2.0, vwap_std=2.0, show_bb=false, show_vwap=false)
     "bb_window": 20,
     "bb_std": 2.0,
-    "vwap_std": 2.0
+    "vwap_std": 2.0,
+    "show_bb": false,
+    "show_vwap": false
   }
 }
 ```
@@ -173,7 +175,9 @@ chart_request_with_signal = {
     "strategy_params": {
         "bb_window": 20,
         "bb_std": 2.0,
-        "vwap_std": 2.0
+        "vwap_std": 2.0,
+        "show_bb": False,
+        "show_vwap": False
     }
 }
 

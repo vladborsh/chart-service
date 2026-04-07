@@ -119,25 +119,21 @@ class IndicatorCalculator:
             Dictionary with calculated indicators
         """
         indicators = {}
-        
-        # Calculate Bollinger Bands
-        bb_window = strategy_params.get('bb_window', 20)
-        bb_std = strategy_params.get('bb_std', 2)
-        
-        try:
-            indicators['bb'] = self.calculate_bollinger_bands(df, window=bb_window, num_std=bb_std)
-        except Exception as e:
-            logger.error(f"Error calculating Bollinger Bands: {e}")
-            return {}
-        
-        # Calculate VWAP with daily reset
-        vwap_std = strategy_params.get('vwap_std', 2)
-        
-        try:
-            indicators['vwap'] = self.calculate_vwap(df, num_std=vwap_std)
-        except Exception as e:
-            logger.error(f"Error calculating VWAP: {e}")
-            return {}
-        
+
+        if strategy_params.get('show_bb', False):
+            bb_window = strategy_params.get('bb_window', 20)
+            bb_std = strategy_params.get('bb_std', 2)
+            try:
+                indicators['bb'] = self.calculate_bollinger_bands(df, window=bb_window, num_std=bb_std)
+            except Exception as e:
+                logger.error(f"Error calculating Bollinger Bands: {e}")
+
+        if strategy_params.get('show_vwap', False):
+            vwap_std = strategy_params.get('vwap_std', 2)
+            try:
+                indicators['vwap'] = self.calculate_vwap(df, num_std=vwap_std)
+            except Exception as e:
+                logger.error(f"Error calculating VWAP: {e}")
+
         logger.debug("Indicators calculated successfully")
         return indicators

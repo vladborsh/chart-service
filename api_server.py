@@ -51,6 +51,8 @@ class StrategyParams(BaseModel):
     bb_window: int = Field(20, description="Bollinger Bands window")
     bb_std: float = Field(2.0, description="Bollinger Bands standard deviation")
     vwap_std: float = Field(2.0, description="VWAP standard deviation")
+    show_bb: bool = Field(False, description="Enable Bollinger Bands overlay")
+    show_vwap: bool = Field(False, description="Enable VWAP overlay")
 
 
 class ChartRequest(BaseModel):
@@ -136,9 +138,11 @@ async def generate_chart(request: ChartRequest):
         strategy_dict = {
             'bb_window': request.strategy_params.bb_window if request.strategy_params else 20,
             'bb_std': request.strategy_params.bb_std if request.strategy_params else 2.0,
-            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0
+            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0,
+            'show_bb': request.strategy_params.show_bb if request.strategy_params else False,
+            'show_vwap': request.strategy_params.show_vwap if request.strategy_params else False,
         }
-        
+
         # Generate chart
         chart_bytes = chart_renderer.generate_chart(
             data=df,
@@ -146,7 +150,7 @@ async def generate_chart(request: ChartRequest):
             strategy_params=strategy_dict,
             symbol=request.symbol
         )
-        
+
         if chart_bytes is None:
             return ChartResponse(
                 success=False,
@@ -213,9 +217,11 @@ async def generate_chart_image(request: ChartRequest):
         strategy_dict = {
             'bb_window': request.strategy_params.bb_window if request.strategy_params else 20,
             'bb_std': request.strategy_params.bb_std if request.strategy_params else 2.0,
-            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0
+            'vwap_std': request.strategy_params.vwap_std if request.strategy_params else 2.0,
+            'show_bb': request.strategy_params.show_bb if request.strategy_params else False,
+            'show_vwap': request.strategy_params.show_vwap if request.strategy_params else False,
         }
-        
+
         # Generate chart
         chart_bytes = chart_renderer.generate_chart(
             data=df,
@@ -223,7 +229,7 @@ async def generate_chart_image(request: ChartRequest):
             strategy_params=strategy_dict,
             symbol=request.symbol
         )
-        
+
         if chart_bytes is None:
             raise HTTPException(
                 status_code=500,
